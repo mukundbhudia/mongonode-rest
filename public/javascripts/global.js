@@ -5,8 +5,13 @@ var userListData = [];
 $(document).ready(function(){
 	//...populate the user table
 	populateTable();
+	//wire up user info links
 	$('#userList table tbody').on('click', 'td a.linkshowuser', showUserInfo);
+	//wire up the add user form button
 	$('#btnAddUser').on('click', addUser);
+	//wire up the delete user link
+	$('#userList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
+
 });
 
 function populateTable() {
@@ -85,6 +90,30 @@ function addUser(event) {
 	} else {
 		//Form needs to be filled out if error count > 0
 		alert('Please fill out all fields');
+		return false;
+	}
+}
+
+function deleteUser(event) {
+
+	event.preventDefault;
+	// show an option to user to confirm their intentions
+	var confirmation = confirm('Are you sure you want to delete this user?');
+
+	if (confirmation === true) {
+		//invoke ajax call to delete the users
+		$.ajax({
+			type: 'DELETE',
+			url: '/users/deleteuser/' + $(this).attr('rel')
+		}).done(function(response){
+			if (response.msg === '') {
+
+			} else {
+				alert('An error has occured: ' + response.msg);
+			}
+			populateTable();
+		});
+	} else {
 		return false;
 	}
 }
